@@ -1,0 +1,38 @@
+@import "../styles";
+
+$screen-sm: 320px;
+$screen-md: 768px;
+$screen-lg: 1024px;
+
+:host {
+  display: block;
+  overflow: hidden;
+  padding: 8px 250px;
+
+  .rates-table {
+    width: 100%;
+
+    .rates-table-row {
+      .rates-table-row-cell {
+        padding: 8px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .refresh-button {
+    position: fixed;
+    right: 250px;
+    bottom: 10px;
+  }
+
+  @media (max-width: $screen-md) {
+    padding: 2px 2px 72px 2px;
+
+    .refresh-button {
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+}
+

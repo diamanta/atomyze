@@ -1,12 +1,16 @@
-<button (click)="refreshRates$.next()">REFRESH</button>
+<input matInput>
 
-<table mat-table [dataSource]="ratesDataSource">
+<table class="rates-table" mat-table [dataSource]="ratesDataSource">
 
   <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-    <th mat-header-cell *matHeaderCellDef>{{column}}</th>
-    <td mat-cell *matCellDef="let element">{{element[column]}}</td>
+    <th class="rates-table-header" mat-header-cell *matHeaderCellDef>{{columnNamesMap[column]}}</th>
+    <td class="rates-table-row-cell" mat-cell *matCellDef="let element">{{element[column]}}</td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr class="rates-table-row-header" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr class="rates-table-row" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
+
+<button class="refresh-button" mat-fab color="primary" (click)="refreshRates$.next()">
+  <mat-icon>refresh</mat-icon>
+</button>
