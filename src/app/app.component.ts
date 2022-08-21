@@ -1,18 +1,21 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { distinctUntilChanged, map, race, repeat, Subject, timer } from 'rxjs';
-import { CbrRatesService } from './cbr-rates.service';
-import { Valute } from './shared/interfaces/valute.interface';
+import { race, repeat, Subject, timer } from 'rxjs';
+import { Valute } from './interfaces/valute.interface';
+import { CbrRatesService } from './services/cbr-rates.service';
 
 const AUTO_REFRESH_INTERVAL_MS = 10000;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
+
+  amountToExchange: number | null = null;
 
   readonly displayedColumns: (keyof Valute)[] = ['Name', 'Value'];
   readonly refreshRates$: Subject<void> = new Subject<void>();
@@ -28,13 +31,15 @@ export class AppComponent {
   }
 
   constructor(private cbrRates: CbrRatesService) {
-    this.ratesDataSource.connect = () => this.cbrRates.getRates().pipe(
+    this.ratesDataSource.connect = () => this.cbrRates.getValute().pipe(
       repeat({
         delay: () => race([this.refreshRates$, timer(AUTO_REFRESH_INTERVAL_MS)]).pipe(repeat())
-      }),
-      distinctUntilChanged((v1, v2) => v1.Timestamp === v2.Timestamp),
-      map(rates => Object.values(rates.Valute))
+      })
     );
   }
 
+  log($event: Event) {
+    debugger
+    console.log($event)
+  }
 }

@@ -1,15 +1,33 @@
-<input matInput>
+<div class="container">
+  <mat-table class="rates-table" [dataSource]="ratesDataSource">
+    <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
+      <mat-header-cell class="rates-table-cell" *matHeaderCellDef>{{columnNamesMap[column]}}</mat-header-cell>
+      <ng-container [ngSwitch]="column">
+        <ng-container *ngSwitchCase="'Value'">
+          <mat-cell class="rates-table-cell" *matCellDef="let element">
+            {{element[column] | calculateExchange : amountToExchange: element['Nominal']}}
+          </mat-cell>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <mat-cell class="rates-table-cell" *matCellDef="let element">{{element[column]}}</mat-cell>
+        </ng-container>
+      </ng-container>
+    </ng-container>
 
-<table class="rates-table" mat-table [dataSource]="ratesDataSource">
+    <ng-container matColumnDef="Input">
+      <mat-header-cell class="rates-table-cell" *matHeaderCellDef>
+        <mat-form-field class="exchange-input" appearance="standard">
+          <mat-label>Количество рублей для обмена</mat-label>
+          <input matInput min="1" type="number" [(ngModel)]="amountToExchange">
+        </mat-form-field>
+      </mat-header-cell>
+    </ng-container>
 
-  <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
-    <th class="rates-table-header" mat-header-cell *matHeaderCellDef>{{columnNamesMap[column]}}</th>
-    <td class="rates-table-row-cell" mat-cell *matCellDef="let element">{{element[column]}}</td>
-  </ng-container>
-
-  <tr class="rates-table-row-header" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr class="rates-table-row" mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+    <mat-header-row class="rates-table-header" *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-header-row class="rates-table-header" *matHeaderRowDef="['Input']; sticky: true"></mat-header-row>
+    <mat-row class="rates-table-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+</div>
 
 <button class="refresh-button" mat-fab color="primary" (click)="refreshRates$.next()">
   <mat-icon>refresh</mat-icon>
