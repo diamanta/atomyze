@@ -26,6 +26,9 @@
     <mat-header-row class="rates-table-header" *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-header-row class="rates-table-header" *matHeaderRowDef="['Input']; sticky: true"></mat-header-row>
     <mat-row class="rates-table-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <div class="rates-table-no-data-row" *matNoDataRow="let row;">
+        Нет данных для отображения
+    </div>
   </mat-table>
 </div>
 
