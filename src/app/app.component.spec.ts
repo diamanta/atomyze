@@ -8,9 +8,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Observable, of } from 'rxjs';
+import { iif, Observable, of, tap } from 'rxjs';
 import { AppComponent } from './app.component';
 import { Valute } from './interfaces/valute.interface';
+import { valuteResponseMock2 } from './mocks/valute-response-2.mock';
 import { valuteResponseMock } from './mocks/valute-response.mock';
 import { CalculateExchangePipe } from './pipes/calculate-exchange.pipe';
 import { CbrRatesService } from './services/cbr-rates.service';
@@ -18,7 +19,11 @@ import { CbrRatesService } from './services/cbr-rates.service';
 @Injectable()
 class MockCbrService extends CbrRatesService {
   override getValute(): Observable<Valute[]> {
-    return of(valuteResponseMock);
+    return iif(
+      () => !!this['valuteCache'].length,
+      of(valuteResponseMock2),
+      of(valuteResponseMock)
+    ).pipe(tap((v) => this['valuteCache'] = v))
   }
 }
 
@@ -52,7 +57,7 @@ describe('AppComponent', () => {
     mockCbrService = TestBed.inject(CbrRatesService)
     appComponent = fixture.componentInstance;
     fixture.detectChanges();
-
+    await fixture.whenRenderingDone();
   });
 
   it('should create the app', () => {
@@ -80,10 +85,25 @@ describe('AppComponent', () => {
     expect(input).toBeTruthy();
   })
 
-  it('should render rows', async () => {
+  it('should render refresh button', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const refreshButton = compiled.querySelector('.refresh-button');
+    expect(refreshButton).toBeTruthy();
+  })
+
+  it('should render rows', () => {
     const tableComponent = fixture.debugElement.query(By.css('mat-table'));
-    await fixture.whenRenderingDone();
     expect(tableComponent.queryAll(By.css('mat-row')).length).toEqual(valuteResponseMock.length);
+  })
+
+  it('should update table on refresh button click',  async () => {
+    const tableComponent = fixture.debugElement.query(By.css('mat-table'));
+    expect(tableComponent.queryAll(By.css('mat-row')).length).toEqual(valuteResponseMock.length);
+    const refreshButton = fixture.debugElement.query(By.css('.refresh-button'))
+    expect(refreshButton).toBeTruthy();
+    refreshButton.nativeElement.click();
+    await fixture.whenRenderingDone();
+    expect(tableComponent.queryAll(By.css('mat-row')).length).toEqual(valuteResponseMock2.length);
   })
 
 });
