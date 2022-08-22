@@ -38,8 +38,4 @@ export class AppComponent {
     );
   }
 
-  log($event: Event) {
-    debugger
-    console.log($event)
-  }
 }
