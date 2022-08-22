@@ -15,7 +15,7 @@ const AUTO_REFRESH_INTERVAL_MS = 10000;
 })
 export class AppComponent {
 
-  amountToExchange: number | null = null;
+  amountToExchange: number | undefined;
 
   readonly displayedColumns: (keyof Valute)[] = ['Name', 'Value'];
   readonly refreshRates$: Subject<void> = new Subject<void>();
